@@ -15220,8 +15220,8 @@ static const WCHAR uc869[] = {	/*  CP869(Greek 2) to Unicode conversion table */
 
 #if FF_CODE_PAGE != 0 && FF_CODE_PAGE < 900
 WCHAR ff_uni2oem (	/* Returns OEM code character, zero on error */
-	DWORD	uni,	/* UTF-16 encoded character to be converted */
-	WORD	cp		/* Code page for the conversion */
+	DU16	uni,	/* UTF-16 encoded character to be converted */
+	U16	cp		/* Code page for the conversion */
 )
 {
 	WCHAR c = 0;
@@ -15243,7 +15243,7 @@ WCHAR ff_uni2oem (	/* Returns OEM code character, zero on error */
 
 WCHAR ff_oem2uni (	/* Returns Unicode character in UTF-16, zero on error */
 	WCHAR	oem,	/* OEM code to be converted */
-	WORD	cp		/* Code page for the conversion */
+	U16	cp		/* Code page for the conversion */
 )
 {
 	WCHAR c = 0;
@@ -15273,13 +15273,13 @@ WCHAR ff_oem2uni (	/* Returns Unicode character in UTF-16, zero on error */
 
 #if FF_CODE_PAGE >= 900
 WCHAR ff_uni2oem (	/* Returns OEM code character, zero on error */
-	DWORD	uni,	/* UTF-16 encoded character to be converted */
-	WORD	cp		/* Code page for the conversion */
+	DU16	uni,	/* UTF-16 encoded character to be converted */
+	U16	cp		/* Code page for the conversion */
 )
 {
 	const WCHAR* p;
 	WCHAR c = 0, uc;
-	UINT i = 0, n, li, hi;
+	U32 i = 0, n, li, hi;
 
 
 	if (uni < 0x80) {	/* ASCII? */
@@ -15310,12 +15310,12 @@ WCHAR ff_uni2oem (	/* Returns OEM code character, zero on error */
 
 WCHAR ff_oem2uni (	/* Returns Unicode character in UTF-16, zero on error */
 	WCHAR	oem,	/* OEM code to be converted */
-	WORD	cp		/* Code page for the conversion */
+	U16	cp		/* Code page for the conversion */
 )
 {
 	const WCHAR* p;
 	WCHAR c = 0;
-	UINT i = 0, n, li, hi;
+	U32 i = 0, n, li, hi;
 
 
 	if (oem < 0x80) {	/* ASCII? */
@@ -15351,18 +15351,18 @@ WCHAR ff_oem2uni (	/* Returns Unicode character in UTF-16, zero on error */
 
 #if FF_CODE_PAGE == 0
 
-static const WORD cp_code[]          = {  437,   720,   737,   771,   775,   850,   852,   855,   857,   860,   861,   862,   863,   864,   865,   866,   869, 0};
+static const U16 cp_code[]          = {  437,   720,   737,   771,   775,   850,   852,   855,   857,   860,   861,   862,   863,   864,   865,   866,   869, 0};
 static const WCHAR* const cp_table[] = {uc437, uc720, uc737, uc771, uc775, uc850, uc852, uc855, uc857, uc860, uc861, uc862, uc863, uc864, uc865, uc866, uc869, 0};
 
 
 WCHAR ff_uni2oem (	/* Returns OEM code character, zero on error */
-	DWORD	uni,	/* UTF-16 encoded character to be converted */
-	WORD	cp		/* Code page for the conversion */
+	DU16	uni,	/* UTF-16 encoded character to be converted */
+	U16	cp		/* Code page for the conversion */
 )
 {
 	const WCHAR* p;
 	WCHAR c = 0, uc;
-	UINT i, n, li, hi;
+	U32 i, n, li, hi;
 
 
 	if (uni < 0x80) {	/* ASCII? */
@@ -15409,12 +15409,12 @@ WCHAR ff_uni2oem (	/* Returns OEM code character, zero on error */
 
 WCHAR ff_oem2uni (	/* Returns Unicode character in UTF-16, zero on error */
 	WCHAR	oem,	/* OEM code to be converted (DBC if >=0x100) */
-	WORD	cp		/* Code page for the conversion */
+	U16	cp		/* Code page for the conversion */
 )
 {
 	const WCHAR* p;
 	WCHAR c = 0;
-	UINT i, n, li, hi;
+	U32 i, n, li, hi;
 
 
 	if (oem < 0x80) {	/* ASCII? */
@@ -15461,13 +15461,13 @@ WCHAR ff_oem2uni (	/* Returns Unicode character in UTF-16, zero on error */
 /* Unicode Up-case Conversion                                             */
 /*------------------------------------------------------------------------*/
 
-DWORD ff_wtoupper (	/* Returns up-converted code point */
-	DWORD uni		/* Unicode code point to be up-converted */
+DU16 ff_wtoupper (	/* Returns up-converted code point */
+	DU16 uni		/* Unicode code point to be up-converted */
 )
 {
-	const WORD* p;
-	WORD uc, bc, nc, cmd;
-	static const WORD cvt1[] = {	/* Compressed up conversion table for U+0000 - U+0FFF */
+	const U16* p;
+	U16 uc, bc, nc, cmd;
+	static const U16 cvt1[] = {	/* Compressed up conversion table for U+0000 - U+0FFF */
 		/* Basic Latin */
 		0x0061,0x031A,
 		/* Latin-1 Supplement */
@@ -15514,7 +15514,7 @@ DWORD ff_wtoupper (	/* Returns up-converted code point */
 
 		0x0000	/* EOT */
 	};
-	static const WORD cvt2[] = {	/* Compressed up conversion table for U+1000 - U+FFFF */
+	static const U16 cvt2[] = {	/* Compressed up conversion table for U+1000 - U+FFFF */
 		/* Phonetic Extensions */
 		0x1D7D,0x0001,0x2C63,
 		/* Latin Extended Additional */
@@ -15561,7 +15561,7 @@ DWORD ff_wtoupper (	/* Returns up-converted code point */
 
 
 	if (uni < 0x10000) {	/* Is it in BMP? */
-		uc = (WORD)uni;
+		uc = (U16)uni;
 		p = uc < 0x1000 ? cvt1 : cvt2;
 		for (;;) {
 			bc = *p++;								/* Get the block base */

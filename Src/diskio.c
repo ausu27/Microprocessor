@@ -10,12 +10,11 @@
 #ifndef __DISKIO_H
 #define __DISKIO_H
 
-#include "types.h"
-// #include "ff.h"			/* Obtains integer types */
+#include "ff.h"			/* Obtains integer types */
 #include "diskio.h"		/* Declarations of disk functions */
-#include "OK-STM767.h"
+#include <stdint.h>
 #include "sd_diskio.h"
-
+// #include "OK-STM767.h"
 
 /* Definitions of physical drive number for each drive */
 #define DEV_RAM		0	/* Example: Map Ramdisk to physical drive 0 */
@@ -28,7 +27,7 @@
 /*-----------------------------------------------------------------------*/
 
 DSTATUS disk_status (
-	BYTE pdrv		/* Physical drive nmuber to identify the drive */
+	U08 pdrv		/* Physical drive nmuber to identify the drive */
 )
 {
 	DSTATUS stat;
@@ -79,7 +78,7 @@ DSTATUS disk_status (
 /*-----------------------------------------------------------------------*/
 
 DSTATUS disk_initialize (
-	BYTE pdrv				/* Physical drive nmuber to identify the drive */
+	U08 pdrv				/* Physical drive nmuber to identify the drive */
 )
 {
 	DSTATUS stat;
@@ -122,10 +121,10 @@ DSTATUS disk_initialize (
 /*-----------------------------------------------------------------------*/
 
 DRESULT disk_read (
-	BYTE pdrv,		/* Physical drive nmuber to identify the drive */
-	BYTE *buff,		/* Data buffer to store read data */
+	U08 pdrv,		/* Physical drive nmuber to identify the drive */
+	U08 *buff,		/* Data buffer to store read data */
 	LBA_t sector,	/* Start sector in LBA */
-	UINT count		/* Number of sectors to read */
+	U32 count		/* Number of sectors to read */
 )
 {
 	DRESULT res;
@@ -133,8 +132,8 @@ DRESULT disk_read (
 
 	switch (pdrv) {
 	case DEV_MMC :
-        for ( UINT i = 0; i < count; i++ ) {
-            SD_read_sector( sector + i, buff + ( i * 512 ) ); // 512byte씩 읽어서 buffer에 저장
+        for ( unsigned int i = 0; i < count; i++ ) {
+            SD_read_sector( sector + i, buff + ( i * 512 ) ); // 512U08씩 읽어서 buffer에 저장
         }
         res = RES_OK; // 읽기 성공 시 RES_OK 반환
         break;
@@ -175,15 +174,15 @@ DRESULT disk_read (
 #if FF_FS_READONLY == 0
 
 DRESULT disk_write (
-	BYTE pdrv,			/* Physical drive nmuber to identify the drive */
-	const BYTE *buff,	/* Data to be written */
+	U08 pdrv,			/* Physical drive nmuber to identify the drive */
+	const U08 *buff,	/* Data to be written */
 	LBA_t sector,		/* Start sector in LBA */
-	UINT count			/* Number of sectors to write */
+	U32 count			/* Number of sectors to write */
 )
 {
 	DRESULT res;
 	//int result;
-    UINT i;
+    U32 i;
 
 	switch (pdrv) {
 	case DEV_MMC :
@@ -223,8 +222,8 @@ DRESULT disk_write (
 /*-----------------------------------------------------------------------*/
 
 DRESULT disk_ioctl (
-  BYTE pdrv,     /* [IN] 드라이브 번호 */
-  BYTE cmd,      /* [IN] 제어 명령 코드 */
+  U08 pdrv,     /* [IN] 드라이브 번호 */
+  U08 cmd,      /* [IN] 제어 명령 코드 */
   void* buff     /* [I/O] 파라미터와 데이터 버퍼 */
 )
 {
@@ -241,26 +240,26 @@ DRESULT disk_ioctl (
         
       case GET_SECTOR_COUNT:
         // SD 카드의 총 섹터 수를 구하는 명령
-        *(DWORD*)buff = SD_get_capacity();  // SD 카드 용량 함수 호출
+        *(unsigned int*)buff = SD_get_capacity();  // SD 카드 용량 함수 호출
         res = RES_OK;
         break;
         
       case GET_SECTOR_SIZE:
         // SD 카드의 섹터 크기를 구하는 명령 (512 바이트 고정)
-        *(WORD*)buff = 512;  // SD 카드의 섹터 크기
+        *(unsigned int*)buff = 512;  // SD 카드의 섹터 크기
         res = RES_OK;
         break;
         
       case GET_BLOCK_SIZE:
         // SD 카드의 블록 크기 구하는 명령 (일반적으로 1 블록은 512 바이트)
-        *(DWORD*)buff = 1;  // SD 카드 블록 크기
+        *(unsigned int*)buff = 1;  // SD 카드 블록 크기
         res = RES_OK;
         break;
         
       case CTRL_ERASE_SECTOR:
         // SD 카드에서 섹터 지우기
         // buff는 지울 섹터 번호를 담고 있는 포인터로 가정
-        res = SD_erase_sector(*(DWORD*)buff);  // SD 카드의 특정 섹터 지우는 함수 *(DWORD*)buff는 (DWORD*)buff buff 포인터가 가리키는 주소를 역참조, 데이터 가져옴
+        res = SD_erase_sector(*(unsigned int*)buff);  // SD 카드의 특정 섹터 지우는 함수 *(DU16*)buff는 (DU16*)buff buff 포인터가 가리키는 주소를 역참조, 데이터 가져옴
         break;
         
       case SD_CARD_STATUS:
