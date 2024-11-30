@@ -3,6 +3,9 @@
 #include "ff.h"
 #include "diskio.h"
 #include "sd_diskio.h"
+#include <string.h>
+#include <stdlib.h>
+#include <stdio.h>
 
 
 #define DIRECTORY_NAME "recordings"
@@ -14,6 +17,7 @@ void EXTI1_IRQHandler(void); /* EXTI1 interrupt function */
 void create_new_file(void);
 FRESULT create_directory(void);
 unsigned int get_next_file_index(void);
+void TFT_SD_Init(void);
 
 short ADC1_data_buffer[256];
 volatile unsigned int interrupt_flag_key1, interrupt_flag_key2;
@@ -78,6 +82,12 @@ void TIM1_UP_TIM10_IRQHandler(void) /* TIM1 interrupt function (27MHz)*/
 
 int main( void )
 {
+  Initialize_MCU();
+  Delay_ms(50);
+  Initialize_TFT_LCD();
+  
+  TFT_SD_Init();
+  
   //////KEY_INTERRUPT/////////////////
   GPIOC->MODER &= 0xFFFFFF00; // PC3,2,1,0 = input mode
   RCC->APB2ENR |= 0x00000001; // enable SYSCFG
@@ -236,6 +246,19 @@ FRESULT create_directory(void) {
     // 디렉토리가 존재하지 않으면 생성
     res1 = f_mkdir("recordings");  
     return res1;
+}
+
+void TFT_SD_Init( void ) {
+    LCD_string(0x80," OK-STM767 V1.0 ");		// display title
+  LCD_string(0xC0,"   Exp20_1.c    ");
+
+  TFT_string(0,4,Green,Black,"****************************************");
+  TFT_string(0,6,White,Black,"  OK-STM767 키트를 이용한 MP3 플레이어  ");
+  TFT_string(0,8,Green,Black,"****************************************");
+  TFT_string(0,23,Cyan,Black,"           SD 카드 초기화...            ");
+  Beep();
+  Delay_ms(1000);
+  TFT_clear_screen();
 }
 
 

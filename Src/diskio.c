@@ -12,9 +12,9 @@
 
 #include "ff.h"			/* Obtains integer types */
 #include "diskio.h"		/* Declarations of disk functions */
-#include <stdint.h>
+// #include <stdint.h>
 #include "sd_diskio.h"
-// #include "OK-STM767.h"
+#include "OK-STM767.h"
 
 /* Definitions of physical drive number for each drive */
 #define DEV_RAM		0	/* Example: Map Ramdisk to physical drive 0 */
@@ -81,39 +81,21 @@ DSTATUS disk_initialize (
 	U08 pdrv				/* Physical drive nmuber to identify the drive */
 )
 {
-	DSTATUS stat;
-	//int result;
+	DSTATUS stat = STA_NOINIT;
+	U08 result = 1;
 
 	switch (pdrv) {
 		case DEV_MMC :  
-			Initialize_SD();  // SD 카드 초기화 함수 호출
-
-			// SD 카드 초기화가 성공적으로 완료되면 정상적인 상태 변환
-			if ( SD_type != 0 ) {   // SD_type이 0이 아니면 초기화 성공
-				stat = 0;           // 성공 상태 
-			} else {
-				stat = STA_NOINIT;  // 실패 상태
-			}
-			return stat;
-		/*
-		case DEV_USB :
-			result = USB_disk_initialize();
-
-			// translate the reslut code here
-
-			return stat;
-		}
-		case DEV_RAM :
-			result = RAM_disk_initialize();
-
-			// translate the reslut code here
-
-			return stat;
-		*/
-	}
-	return STA_NOINIT; // 0x01
+                  result = Initialize_SD(); 
+                  if ( result == 0 ) {
+                     stat = 0;
+                  } else {
+                    stat = STA_NOINIT;
+                  }
+                  return stat;
+        }
+        return STA_NOINIT;
 }
-
 
 
 /*-----------------------------------------------------------------------*/
@@ -191,30 +173,12 @@ DRESULT disk_write (
         }
         res = RES_OK; //성공
 		return res;    
-    /*
-	case DEV_USB :
-		// translate the arguments here
-
-		result = USB_disk_write(buff, sector, count);
-
-		// translate the reslut code here
-
-		return res;
-	}
-    case DEV_RAM :
-		// translate the arguments here
-
-		result = RAM_disk_write(buff, sector, count);
-
-		// translate the reslut code here
-
-		return res;
-    */
     }
 	return RES_PARERR;
 }
 
 #endif
+
 
 
 /*-----------------------------------------------------------------------*/
@@ -277,4 +241,5 @@ DRESULT disk_ioctl (
   
   return res;
 }
+
 #endif
